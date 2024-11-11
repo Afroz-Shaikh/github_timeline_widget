@@ -1,26 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:github_timeline/main.dart';
-import 'package:github_timeline/temp.dart';
-import 'package:flutter/material.dart';
+import 'package:github_timeline/models/models.dart';
+import 'package:github_timeline/utils/constants.dart';
 
-// Custom function to format DateTime as 'yyyy-MM-dd'
-String formatDate(DateTime date) {
-  String year = date.year.toString();
-  String month = date.month < 10 ? '0${date.month}' : date.month.toString();
-  String day = date.day < 10 ? '0${date.day}' : date.day.toString();
-  return '$year-$month-$day';
-}
+///
+/// GridTileViewGraph widget to display the yearly transaction graph
+///
+class GridTileViewGraph extends StatefulWidget {
+  /// constructor for the TransactionGraph class
+  const GridTileViewGraph({required this.transactions, super.key});
 
-class TransactionGraph extends StatefulWidget {
+  /// list of transactions
   final List<Transaction> transactions;
 
-  TransactionGraph({required this.transactions});
-
   @override
-  _TransactionGraphState createState() => _TransactionGraphState();
+  _GridTileViewGraphState createState() => _GridTileViewGraphState();
 }
 
-class _TransactionGraphState extends State<TransactionGraph> {
+class _GridTileViewGraphState extends State<GridTileViewGraph> {
   late final Map<String, double> _transactionMap;
 
   @override
@@ -30,8 +26,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   Map<String, double> _aggregateTransactions(List<Transaction> transactions) {
-    final Map<String, double> transactionMap = {};
-    for (var transaction in transactions) {
+    final transactionMap = <String, double>{};
+    for (final transaction in transactions) {
       transactionMap[transaction.date] = transaction.totalAmount;
     }
     return transactionMap;
@@ -41,10 +37,10 @@ class _TransactionGraphState extends State<TransactionGraph> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Yearly Transaction Graph'),
+        title: const Text('Yearly Transaction Graph'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8),
         child: _buildGraph(),
       ),
     );
@@ -55,7 +51,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
     final firstDayOfYear = DateTime(now.year - 1, now.month, now.day);
     final blocks = <Widget>[];
 
-    for (int i = 0; i < 365; i++) {
+    for (var i = 0; i < 365; i++) {
       final currentDate = firstDayOfYear.add(Duration(days: i));
       final dateString = formatDate(currentDate);
       final amountSpent = _transactionMap[dateString] ?? 0.0;
@@ -68,7 +64,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
           onTap: () =>
               _showTransactionsDialog(context, currentDate, amountSpent),
           child: Container(
-            margin: const EdgeInsets.all(1.0),
+            margin: const EdgeInsets.all(1),
             width: 10,
             height: 10,
             color: color,
@@ -85,14 +81,17 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   void _showTransactionsDialog(
-      BuildContext context, DateTime date, double amountSpent) {
+    BuildContext context,
+    DateTime date,
+    double amountSpent,
+  ) {
     final dateString = formatDate(date);
     final transactions = widget.transactions
         .where((transaction) => transaction.date == dateString)
         .expand((transaction) => transaction.transactionDetails)
         .toList();
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -101,18 +100,20 @@ class _TransactionGraphState extends State<TransactionGraph> {
               ? Column(
                   mainAxisSize: MainAxisSize.min,
                   children: transactions
-                      .map((detail) => ListTile(
-                            title: Text(detail.merchant),
-                            subtitle:
-                                Text('\$${detail.amount.toStringAsFixed(2)}'),
-                          ))
+                      .map(
+                        (detail) => ListTile(
+                          title: Text(detail.merchant),
+                          subtitle:
+                              Text('\$${detail.amount.toStringAsFixed(2)}'),
+                        ),
+                      )
                       .toList(),
                 )
-              : Text('No transactions recorded for this day.'),
+              : const Text('No transactions recorded for this day.'),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         );

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:github_timeline/main.dart';
 import 'package:github_timeline/mocktransactions.dart';
-import 'package:github_timeline/transaction_graph.dart';
+import 'package:github_timeline/screens/widgets/grid_tile_view_graph.dart';
 
 class HorizontalPage extends StatefulWidget {
   const HorizontalPage({super.key});
@@ -21,20 +19,22 @@ class _HorizontalPageState extends State<HorizontalPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isHorizontal = true;
+    const isHorizontal = true;
     return Scaffold(
-        backgroundColor: Colors.blueGrey,
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            return SizedBox(
-                width: constraints.maxWidth,
-                child: InteractiveViewer(
-                  child: TransactionGraph(
-                    transactions: mockTransactions,
-                  ),
-                ));
-          },
-        ));
+      backgroundColor: Colors.blueGrey,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SizedBox(
+            width: constraints.maxWidth,
+            child: InteractiveViewer(
+              child: GridTileViewGraph(
+                transactions: mockTransactions,
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }
 
