@@ -18,11 +18,13 @@ class GridTileViewGraph extends StatefulWidget {
 
 class _GridTileViewGraphState extends State<GridTileViewGraph> {
   late final Map<String, double> _transactionMap;
+  late final Map<String, bool> _hasCreditTransactionMap;
 
   @override
   void initState() {
     super.initState();
     _transactionMap = _aggregateTransactions(widget.transactions);
+    _hasCreditTransactionMap = _checkCreditTransactions(widget.transactions);
   }
 
   Map<String, double> _aggregateTransactions(List<Transaction> transactions) {
@@ -31,6 +33,16 @@ class _GridTileViewGraphState extends State<GridTileViewGraph> {
       transactionMap[transaction.date] = transaction.totalAmount;
     }
     return transactionMap;
+  }
+
+  Map<String, bool> _checkCreditTransactions(List<Transaction> transactions) {
+    final creditMap = <String, bool>{};
+    for (final transaction in transactions) {
+      final hasCredit = transaction.transactionDetails
+          .any((detail) => detail.type == ExpenseType.credit);
+      creditMap[transaction.date] = hasCredit;
+    }
+    return creditMap;
   }
 
   @override
@@ -55,9 +67,15 @@ class _GridTileViewGraphState extends State<GridTileViewGraph> {
       final currentDate = firstDayOfYear.add(Duration(days: i));
       final dateString = formatDate(currentDate);
       final amountSpent = _transactionMap[dateString] ?? 0.0;
-      final colorIntensity = (amountSpent / 100).clamp(0.0, 1.0);
-      final color =
-          Color.lerp(Colors.orange[100], Colors.orange[900], colorIntensity)!;
+      final isCreditDay = _hasCreditTransactionMap[dateString] ?? false;
+
+      final color = isCreditDay
+          ? Colors.green
+          : Color.lerp(
+              Colors.orange[100],
+              Colors.orange[900],
+              (amountSpent / 100).clamp(0.0, 1.0),
+            )!;
 
       blocks.add(
         GestureDetector(

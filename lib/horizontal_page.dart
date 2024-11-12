@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:github_timeline/mocktransactions.dart';
+import 'package:github_timeline/utils/mocktransactions.dart';
 import 'package:github_timeline/screens/widgets/grid_tile_view_graph.dart';
 
 class HorizontalPage extends StatefulWidget {

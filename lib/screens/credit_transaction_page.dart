@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:github_timeline/mocktransactions.dart';
+import 'package:github_timeline/utils/mocktransactions.dart';
 import 'package:github_timeline/models/models.dart';
 import 'package:github_timeline/screens/widgets/app_bar.dart';
 import 'package:github_timeline/screens/widgets/base_time_line_widget.dart';
@@ -40,9 +40,9 @@ class _CardTransactionsPageState extends State<CardTransactionsPage> {
   DraggableScrollableSheet buildScrollableSheet() {
     return DraggableScrollableSheet(
       snap: true,
-      initialChildSize: 0.4,
-      snapSizes: const [0.4, 0.6],
-      minChildSize: 0.4,
+      initialChildSize: 0.3,
+      snapSizes: const [0.3, 0.4],
+      minChildSize: 0.2,
       builder: (BuildContext context, scrollController) {
         return Container(
           clipBehavior: Clip.hardEdge,
@@ -138,9 +138,12 @@ class _CardTransactionsPageState extends State<CardTransactionsPage> {
             alignment: Alignment.topLeft,
             child: Row(
               children: [
-                Text(
-                  'Current Billing Cycle Spedings ${kcycleStartDate.difference(DateTime.now()).inDays} days left',
-                  style: const TextStyle(color: Colors.white),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(
+                    'Current Billing Cycle Spedings ${kcycleStartDate.difference(DateTime.now()).inDays} days left',
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
