@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:github_timeline/utils/mocktransactions.dart';
 import 'package:github_timeline/models/models.dart';
@@ -9,7 +10,7 @@ import 'package:github_timeline/utils/constants.dart';
 /// The main entry point for the application
 ///
 class CardTransactionsPage extends StatefulWidget {
-  /// constructor for hompage
+  /// constructor for homepage
   const CardTransactionsPage({super.key});
 
   @override
@@ -66,16 +67,27 @@ class _CardTransactionsPageState extends State<CardTransactionsPage> {
                   ),
                   ListTile(
                     trailing: Text(
-                      mockTransactions
-                          .map((e) => e.totalAmount)
-                          .reduce((value, element) => value + element)
-                          .toStringAsFixed(2),
+                      mockTransactions.isNotEmpty
+                          ? mockTransactions
+                              .map((e) => e.totalAmount)
+                              .reduce((value, element) => value + element)
+                              .toStringAsFixed(2)
+                          : '0.00',
                     ),
                     title: const Text(
-                      'Recent Transactions',
+                      kRecentTransactions,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
+                  if (mockTransactions.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text(
+                        'No transactions found',
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ...mockTransactions.reversed.map((Transaction transaction) {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 4),
@@ -103,9 +115,7 @@ class _CardTransactionsPageState extends State<CardTransactionsPage> {
                         title: Text(
                           transaction.transactionDetails
                               .map((e) => e.merchant)
-                              .join(
-                                ', ',
-                              ),
+                              .join(', '),
                         ),
                         subtitle: Text(
                           transaction.totalAmount.toString(),
@@ -166,10 +176,11 @@ class _CardTransactionsPageState extends State<CardTransactionsPage> {
                       quarterTurns: isHorizontal ? 3 : 0,
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxWidth: constraints.maxWidth,
+                          maxWidth: constraints.maxWidth - 40,
                           maxHeight: isHorizontal ? double.maxFinite : 400,
                         ),
                         child: TransactionTimelineWidget(
+                        
                           cycleStartDate: kcycleStartDate,
                           transactions: mockTransactions,
                           showLastDaycount: isHorizontal ? 100 : 40,
@@ -178,20 +189,20 @@ class _CardTransactionsPageState extends State<CardTransactionsPage> {
                             final cycleStartDate = kcycleStartDate;
                             final selectedDate =
                                 cycleStartDate.add(Duration(days: index));
-
+                        
                             // Find the transaction for the selected date
                             final transaction = mockTransactions.firstWhere(
                               (Transaction t) => _isSameDay(
                                 DateTime.parse(t.date),
                                 selectedDate,
-                              ), // Use _isSameDay to compare dates
+                              ),
                               orElse: () => Transaction(
                                 date: selectedDate.toString(),
                                 totalAmount: 0,
                                 transactionDetails: [],
                               ),
                             );
-
+                        
                             ///
                             ///  the dialog with the  transaction
                             /// details
@@ -200,29 +211,46 @@ class _CardTransactionsPageState extends State<CardTransactionsPage> {
                               context: context,
                               builder: (context) {
                                 return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  elevation: 0,
                                   child: SizedBox(
                                     height: 200,
                                     width: 300,
-                                    child: ListView.builder(
-                                      itemCount:
-                                          transaction.transactionDetails.length,
-                                      itemBuilder: (context, i) {
-                                        final text = Text(
-                                          '\$${transaction.transactionDetails[i].amount.toStringAsFixed(2)}',
-                                        );
-                                        return ListTile(
-                                          title: Text(
-                                            transaction
-                                                .transactionDetails[i].merchant,
+                                    child: transaction.transactionDetails
+                                            .isNotEmpty
+                                        ? ListView.builder(
+                                            itemCount: transaction
+                                                .transactionDetails.length,
+                                            itemBuilder: (context, i) {
+                                              final text = Text(
+                                                '\$${transaction.transactionDetails[i].amount.toStringAsFixed(2)}',
+                                              );
+                                              return ListTile(
+                                                title: Text(
+                                                  transaction
+                                                      .transactionDetails[i]
+                                                      .merchant,
+                                                ),
+                                                subtitle: Text(
+                                                  transaction
+                                                      .transactionDetails[i]
+                                                      .category,
+                                                ),
+                                                trailing: text,
+                                              );
+                                            },
+                                          )
+                                        : const Center(
+                                            child: Text(
+                                              'No transactions found',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 16,
+                                              ),
+                                            ),
                                           ),
-                                          subtitle: Text(
-                                            transaction
-                                                .transactionDetails[i].category,
-                                          ),
-                                          trailing: text,
-                                        );
-                                      },
-                                    ),
                                   ),
                                 );
                               },
@@ -280,7 +308,6 @@ class _CardTransactionsPageState extends State<CardTransactionsPage> {
           ),
         ];
         return SizedBox(
-          // color: Colors.red,
           child: Column(
             children: children,
           ),

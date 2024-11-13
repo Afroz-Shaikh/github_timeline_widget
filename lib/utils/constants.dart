@@ -8,7 +8,9 @@ DateTime kcycleStartDate = DateTime.now().subtract(const Duration(days: 35));
 ///
 /// The name of the User, In here set to 'Afroz'
 ///
-const String userName = 'Afroz';
+const String kuserName = 'Afroz';
+
+const String kRecentTransactions = 'Recent Transactions';
 
 ///
 /// Method for converting a string to a DateTime object
@@ -37,3 +39,4 @@ String formatDate(DateTime date) {
   final day = date.day < 10 ? '0${date.day}' : date.day.toString();
   return '$year-$month-$day';
 }
+
