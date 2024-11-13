@@ -27,7 +27,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       surfaceTintColor: Colors.orangeAccent,
       title: const Text(
-        'Hi, $userName',
+        'Hi, $kuserName',
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,

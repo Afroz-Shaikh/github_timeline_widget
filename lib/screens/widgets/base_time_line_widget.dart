@@ -123,7 +123,7 @@ class TransactionTimelineRenderBox extends RenderBox {
     final rows = (daysInMonth / columns)
         .ceil(); // Calculate number of rows based on total days
 
-    _cellSize = (availableWidth - (_cellSpacing * (columns - 1))) / columns;
+    _cellSize = (availableWidth - (_cellSpacing * (columns - 1))) / columns * 0.99;
 
     final totalWidth = columns * (_cellSize + _cellSpacing) - _cellSpacing;
     final totalHeight =
@@ -164,14 +164,17 @@ class TransactionTimelineRenderBox extends RenderBox {
     for (var col = 0; col < columns; col++) {
       final x = offset.dx + col * (_cellSize + _cellSpacing);
       final textPainter = TextPainter(
+        
         text: TextSpan(text: rotatedWeekdays[col], style: headerStyle),
         textDirection: TextDirection.ltr,
+        
       );
       textPainter.layout(maxWidth: _cellSize);
       final textOffset = Offset(
         x + (_cellSize - textPainter.width) / 2,
         offset.dy + (_headerHeight - textPainter.height) / 2,
       );
+
       textPainter.paint(canvas, textOffset);
     }
 
@@ -213,7 +216,7 @@ class TransactionTimelineRenderBox extends RenderBox {
       final textPainter = TextPainter(
         text: TextSpan(
           text: '${currentDate.day}',
-          style: TextStyle(color: Colors.black, fontSize: _cellSize * 0.3),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: _cellSize * 0.2),
         ),
         textDirection: TextDirection.ltr,
       );
@@ -222,7 +225,9 @@ class TransactionTimelineRenderBox extends RenderBox {
         x + (_cellSize - textPainter.width) / 2,
         y + (_cellSize - textPainter.height) / 2,
       );
+    //  if(i ==0 || i == daysInMonth - 1){
       textPainter.paint(canvas, textOffset);
+    // }
     }
   }
 
@@ -265,9 +270,9 @@ class TransactionTimelineRenderBox extends RenderBox {
     }
 
     if (transactionAmount == 0) {
-      return Colors.grey[200]!; // No spending
+      return Colors.orange[100]!; // No spending
     } else if (transactionAmount <= 20) {
-      return Colors.orange[100]!; // Low spending
+      return Colors.orange[200]!; // Low spending
     } else if (transactionAmount <= 50) {
       return Colors.orange[300]!; // Moderate spending
     } else {
